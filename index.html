@@ -213,7 +213,19 @@
       </div>
       <div class="row justify-content-center">
         <div class="col-md-6">
-          <form>
+          <div
+            class="alert alert-success alert-dismissible fade show my-alert"
+            role="alert"
+          >
+            <strong>TERIMA KASIH!</strong> pesan anda telah kami terima
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+          <form name="Submit-Form-To-Google-Sheets">
             <div class="mb-2">
               <label for="exampleInputEmail1" class="form-label"
                 >Your Name</label
@@ -223,6 +235,7 @@
                 class="form-control"
                 id="name"
                 aria-describedby="Name"
+                name="nama"
               />
             </div>
             <div class="mb-2">
@@ -232,6 +245,7 @@
                 class="form-control"
                 id="email"
                 aria-describedby="email"
+                name="email"
               />
               <div id="emailHelp" class="form-text">
                 We'll never share your email with anyone else.
@@ -239,16 +253,30 @@
             </div>
             <div class="mb-2">
               <label for="pesan" class="form-label">pesan</label>
-              <textarea class="form-control" id="pesan" rows="3"></textarea>
+              <textarea
+                class="form-control"
+                id="pesan"
+                rows="3"
+                name="pesan"
+              ></textarea>
             </div>
-            <button
-              type="submit"
-              class="btn"
-              style="background-color: white; color: black"
-            >
+            <button type="submit" class="btn btn-primary btn-kirim">
               Send It!
             </button>
+            <button
+              class="btn btn-primary d-none btn-loading"
+              type="button"
+              disabled
+            >
+              <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+              ></span>
+              Loading...
+            </button>
           </form>
+          black
         </div>
       </div>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
@@ -277,5 +305,51 @@
       integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
       crossorigin="anonymous"
     ></script>
+    <!-- Give your form a name  -->
+    <form name="Submit-Form-To-Google-Sheets">
+      <!-- Specify the sheet that you want to store the submissions in -->
+      <input
+        type="hidden"
+        name="sheet_name"
+        value="Submit-Form-To-Google-Sheets"
+      />
+      <!-- If this hidden input is not present, it defaults to 'Sheet1' -->
+
+      <input name="email" type="email" placeholder="Email" required />
+      <button type="submit">Send</button>
+    </form>
+
+    <script>
+      const scriptURL =
+        "https://script.google.com/macros/s/AKfycbwGLDIe83Wr1LgLteIf1bzIUMzqkJJ5pNJeoKzFO-q7UwRSwVHyEt2bMhEA2P5NFMJfSg/exec";
+      const form = document.forms["Submit-Form-To-Google-Sheets"];
+
+      const btnSend = document.querySelector(".btn-kirim");
+      const btnLoading = document.querySelector(".btn-loading");
+      const myalert = document.querySelector(".my-alert");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        // ketika tombol submit diklik
+        // tampilkan tombol loading
+        // hilangkan tombol kirim
+        btnLoading.classList.toggle("d-none");
+        btnSend.classList.toggle("d-none");
+        fetch(scriptURL, {
+          method: "POST",
+          body: new FormData(form),
+          mode: "no-cors",
+        })
+          .then((response) => {
+            btnLoading.classList.toggle("d-none");
+            btnSend.classList.toggle("d-none");
+
+            myalert.classList.toggle("d-none");
+            form.reset();
+            console.log("Succes!");
+          })
+          .catch((error) => console.error("Error!", error.message));
+      });
+    </script>
   </body>
 </html>
